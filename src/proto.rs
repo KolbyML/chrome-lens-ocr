@@ -1,3 +1,4 @@
+// src/proto.rs
 use prost::Message;
 
 // --- Enums ---
@@ -14,6 +15,15 @@ pub enum Platform {
 pub enum Surface {
     Unspecified = 0,
     Chromium = 4,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum TranslationStatus {
+    Unknown = 0,
+    Success = 1,
+    ServerError = 2,
+    // Add others if needed, but 1 is what we check for
 }
 
 // --- Messages ---
@@ -104,6 +114,30 @@ pub struct LensOverlayServerResponse {
 pub struct LensOverlayObjectsResponse {
     #[prost(message, optional, tag = "3")]
     pub text: Option<Text>,
+    // Added Deep Gleams for Translation support
+    #[prost(message, repeated, tag = "4")]
+    pub deep_gleams: Vec<DeepGleamData>,
+}
+
+#[derive(Clone, PartialEq, Message)]
+pub struct DeepGleamData {
+    // Only defining what we need for translation extraction
+    #[prost(message, optional, tag = "10")]
+    pub translation: Option<TranslationData>,
+}
+
+#[derive(Clone, PartialEq, Message)]
+pub struct TranslationData {
+    #[prost(message, optional, tag = "1")]
+    pub status: Option<TranslationStatusMsg>,
+    #[prost(string, tag = "4")]
+    pub translation: String,
+}
+
+#[derive(Clone, PartialEq, Message)]
+pub struct TranslationStatusMsg {
+    #[prost(enumeration = "TranslationStatus", tag = "1")]
+    pub code: i32,
 }
 
 #[derive(Clone, PartialEq, Message)]
@@ -124,12 +158,16 @@ pub struct TextLayout {
 pub struct TextLayoutParagraph {
     #[prost(message, repeated, tag = "2")]
     pub lines: Vec<TextLayoutLine>,
+    #[prost(message, optional, tag = "3")]
+    pub geometry: Option<Geometry>,
 }
 
 #[derive(Clone, PartialEq, Message)]
 pub struct TextLayoutLine {
     #[prost(message, repeated, tag = "1")]
     pub words: Vec<TextLayoutWord>,
+    #[prost(message, optional, tag = "2")]
+    pub geometry: Option<Geometry>,
 }
 
 #[derive(Clone, PartialEq, Message)]
@@ -138,4 +176,26 @@ pub struct TextLayoutWord {
     pub plain_text: String,
     #[prost(string, optional, tag = "3")]
     pub text_separator: Option<String>,
+    #[prost(message, optional, tag = "4")]
+    pub geometry: Option<Geometry>,
+}
+
+#[derive(Clone, PartialEq, Message)]
+pub struct Geometry {
+    #[prost(message, optional, tag = "1")]
+    pub bounding_box: Option<CenterRotatedBox>,
+}
+
+#[derive(Clone, PartialEq, Message)]
+pub struct CenterRotatedBox {
+    #[prost(float, tag = "1")]
+    pub center_x: f32,
+    #[prost(float, tag = "2")]
+    pub center_y: f32,
+    #[prost(float, tag = "3")]
+    pub width: f32,
+    #[prost(float, tag = "4")]
+    pub height: f32,
+    #[prost(float, tag = "5")]
+    pub rotation_z: f32,
 }

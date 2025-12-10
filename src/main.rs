@@ -1,6 +1,6 @@
-use std::env;
-
+// src/main.rs
 use chrome_lens_ocr::LensClient;
+use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -14,18 +14,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let image_path = &args[1];
 
-    // Initialize client (uses default API Key if None provided)
+    // Initialize client
     let client = LensClient::new(None);
 
     println!("Processing image: {}", image_path);
+    // Request English (en) results
     match client.process_image_path(image_path, Some("en")).await {
-        Ok(text) => {
-            println!("--- OCR Result ---");
-            println!("{}", text);
+        Ok(result) => {
+            println!("--- Full Text ---");
+            println!("{}", result.full_text);
+
+            println!("\n--- Detailed Structure ---");
+            println!("Found {} paragraphs.", result.paragraphs.len());
+            for (i, para) in result.paragraphs.iter().enumerate() {
+                println!("Paragraph {}: {} lines", i + 1, para.lines.len());
+                // Example: Print geometry of the first line of the first paragraph
+                if let Some(first_line) = para.lines.first() {
+                    if let Some(geom) = &first_line.geometry {
+                        println!(
+                            "  -> First line pos: x={:.2}, y={:.2}, w={:.2}",
+                            geom.center_x, geom.center_y, geom.width
+                        );
+                    }
+                }
+            }
+
+            if let Some(trans) = result.translation {
+                println!("\n--- Translation ---");
+                println!("{}", trans);
+            }
             println!("------------------");
         }
         Err(e) => {
-            eprintln!("Error: {}", e);
+            eprintln!("Error: {:?}", e);
         }
     }
 
