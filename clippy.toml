@@ -1,0 +1,5 @@
+allow-mixed-uninlined-format-args = false
+
+# This feature is in Rust nightly, as of v1.62. The line is added in anticipation.
+# Once the feature stabilizes, remove the #[allow(clippy::unwrap_used)] lines in front of every `mod test`
+allow-unwrap-in-tests = true
