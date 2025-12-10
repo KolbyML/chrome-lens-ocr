@@ -11,8 +11,6 @@ use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderValue, USER_AGENT};
 
 use crate::{constants::*, proto::*};
 
-// --- Public Data Structures ---
-
 #[derive(Debug, Clone)]
 pub struct LensResult {
     /// The full text combined with newlines.
@@ -266,7 +264,6 @@ impl LensClient {
             for gleam in &objects_res.deep_gleams {
                 if let Some(trans_data) = &gleam.translation {
                     if let Some(status) = &trans_data.status {
-                        // TranslationStatus::Success is enum value 1
                         if status.code == TranslationStatus::Success as i32 {
                             if !trans_data.translation.is_empty() {
                                 translations.push(trans_data.translation.clone());

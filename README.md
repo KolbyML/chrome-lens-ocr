@@ -42,29 +42,6 @@ cargo install chrome_lens_ocr
 
 -----
 
-## 🚀 Usage
-
-### Using as a Library
-
-Here is a basic example of how to use the crate in your Rust code:
-
-```rust
-use chrome_lens_ocr::ChromeLensOcr; // Note: Verify struct name in your code
-
-#[tokio::main]
-async fn main() {
-    let client = ChromeLensOcr::new();
-    
-    // Process an image file
-    match client.process_image("path/to/image.png").await {
-        Ok(results) => {
-            println!("Detected Text: {}", results.text);
-        },
-        Err(e) => eprintln!("Error processing image: {}", e),
-    }
-}
-```
-
 ### Using the CLI
 
 If you have installed the crate globally or are running it from the source:

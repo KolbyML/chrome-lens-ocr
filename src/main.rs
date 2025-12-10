@@ -1,4 +1,3 @@
-// src/main.rs
 use chrome_lens_ocr::LensClient;
 use std::env;
 
@@ -14,11 +13,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let image_path = &args[1];
 
-    // Initialize client
     let client = LensClient::new(None);
 
     println!("Processing image: {}", image_path);
-    // Request English (en) results
     match client.process_image_path(image_path, Some("en")).await {
         Ok(result) => {
             println!("--- Full Text ---");
@@ -28,7 +25,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("Found {} paragraphs.", result.paragraphs.len());
             for (i, para) in result.paragraphs.iter().enumerate() {
                 println!("Paragraph {}: {} lines", i + 1, para.lines.len());
-                // Example: Print geometry of the first line of the first paragraph
                 if let Some(first_line) = para.lines.first() {
                     if let Some(geom) = &first_line.geometry {
                         println!(
